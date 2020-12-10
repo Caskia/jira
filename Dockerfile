@@ -1,6 +1,6 @@
 FROM fedora:30
 
-LABEL maintainer="kaz@praqma.net heh@praqma.net"
+# LABEL maintainer="kaz@praqma.net heh@praqma.net"
 
 # Why Fedora as base OS?
 # * Fedora always has latest packages compared to CentOS.
@@ -227,6 +227,9 @@ RUN echo -e "LANG=\"en_US.UTF-8\" \n LC_ALL=\"en_US.UTF-8\"" >/etc/sysconfig/i18
   && if [ -n "${SSL_CERTS_PATH}" ] && [ -d "${SSL_CERTS_PATH}" ]; then chown ${OS_USERNAME}:${OS_GROUPNAME} ${SSL_CERTS_PATH}; fi \
   && sync
 
+# Copy DB Connector driver
+# Mysql DB Connector driver
+COPY mysql-connector-java-5.1.49.jar "${JIRA_INSTALL}/lib"
 
 # Docker entrypoint script:
 # -------------------------
