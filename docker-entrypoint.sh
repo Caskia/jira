@@ -1,5 +1,30 @@
 #!/bin/bash
 
+# Mount GCSFUSE
+if [ -z "${GCSFUSE_BUCKET}" ]; 
+then
+  echo "Error: GCSFUSE_BUCKET is not specified, won't mount GCSFUSE"
+else
+  if [ -z "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
+  echo "Error: Missing ${GOOGLE_APPLICATION_CREDENTIALS} not provided"
+  exit 128
+  fi
+  echo "Info: Mounting GCS Filesystem"
+
+  if [ -d ${GCSFUSE_MOUNT} ]
+  then
+      echo "GCSFUSE MOUNT ${GCSFUSE_MOUNT} exists"
+      echo "Clear exists files"
+      rm -rf ${GCSFUSE_MOUNT}/*
+      rm -f ${GCSFUSE_MOUNT}/.jira-home.lock
+  else
+      echo "CREATE DIRECTORY ${GCSFUSE_MOUNT}"
+      mkdir -p ${GCSFUSE_MOUNT}
+  fi
+
+  gcsfuse $GCSFUSE_ARGS ${GCSFUSE_BUCKET} ${GCSFUSE_MOUNT}
+fi
+
 # Check if the JIRA_HOME and JIRA_INSTALL variable are found in ENV.
 if [ -z "${JIRA_HOME}" ] || [ -z "${JIRA_INSTALL}" ]; then
   echo "Either JIRA_HOME (${JIRA_HOME}), or JIRA_INSTALL (${JIRA_INSTALL}) is undefined."
@@ -259,6 +284,7 @@ echo
 echo "Jira version and related platform information:"
 echo "============================================="
 cat ${JIRA_INSTALL}/atlassian-version.txt
+echo
 
 echo
 echo "Finished running entrypoint script(s). Now executing: $@  ..."
