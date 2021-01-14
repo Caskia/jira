@@ -21,7 +21,7 @@ else
       echo "CREATE DIRECTORY ${GCSFUSE_MOUNT}"
       mkdir -p ${GCSFUSE_MOUNT}
   fi
-  gcsfuse -o rw,file_mode=755,dir_mode=755 $GCSFUSE_ARGS ${GCSFUSE_BUCKET} ${GCSFUSE_MOUNT}
+  gcsfuse -o allow_other --file-mode 755 --dir-mode 755 $GCSFUSE_ARGS ${GCSFUSE_BUCKET} ${GCSFUSE_MOUNT}
 fi
 
 # Check if the JIRA_HOME and JIRA_INSTALL variable are found in ENV.
