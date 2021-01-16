@@ -32,14 +32,14 @@ else
       mkdir -p ${JIRA_DATA_PATH}
   fi
 
-  JIRA_Link_DATA_PATH=${JIRA_HOME}/data
-  if [ -d ${JIRA_Link_DATA_PATH} ]
+  JIRA_LINK_DATA_PATH=${JIRA_HOME}/data
+  if [ -d ${JIRA_LINK_DATA_PATH} ]
   then
-      echo "JIRA Source Data ${JIRA_Link_DATA_PATH} exists need to remove"
-      rm -rf ${JIRA_Link_DATA_PATH}
+      echo "JIRA Source Data ${JIRA_LINK_DATA_PATH} exists need to remove"
+      rm -rf ${JIRA_LINK_DATA_PATH}
   fi
 
-  ln -s ${JIRA_DATA_PATH} ${JIRA_Link_DATA_PATH}
+  ln -s ${JIRA_DATA_PATH} ${JIRA_LINK_DATA_PATH}
 
   JIRA_PLUGINS_PATH=${GCSFUSE_MOUNT}/plugins
   if [ -d ${JIRA_PLUGINS_PATH} ]
@@ -50,14 +50,14 @@ else
       mkdir -p ${JIRA_PLUGINS_PATH}
   fi
 
-  JIRA_Link_PLUGINS_PATH=${JIRA_HOME}/plugins
-  if [ -d ${JIRA_Link_PLUGINS_PATH} ]
+  JIRA_LINK_PLUGINS_PATH=${JIRA_HOME}/plugins
+  if [ -d ${JIRA_LINK_PLUGINS_PATH} ]
   then
-      echo "JIRA Source Plugins ${JIRA_Link_PLUGINS_PATH} exists need to remove"
-      rm -rf ${JIRA_Link_PLUGINS_PATH}
+      echo "JIRA Source Plugins ${JIRA_LINK_PLUGINS_PATH} exists need to remove"
+      rm -rf ${JIRA_LINK_PLUGINS_PATH}
   fi
 
-  ln -s ${JIRA_PLUGINS_PATH} ${JIRA_Link_PLUGINS_PATH} 
+  ln -s ${JIRA_PLUGINS_PATH} ${JIRA_LINK_PLUGINS_PATH} 
 
 fi
 
