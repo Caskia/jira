@@ -141,7 +141,8 @@ ENV GCSFUSE_BUCKET=""
 
 # GCSFUSE arguments to use
 # See : https://github.com/GoogleCloudPlatform/gcsfuse
-ENV GCSFUSE_ARGS="--limit-ops-per-sec 100 --limit-bytes-per-sec 100 --stat-cache-ttl 60s --type-cache-ttl 60s"
+# ENV GCSFUSE_ARGS="--limit-ops-per-sec 100 --limit-bytes-per-sec 100 --stat-cache-ttl 60s --type-cache-ttl 60s"
+ENV GCSFUSE_ARGS=""
 
 
 # Reverse proxy specific variables:
