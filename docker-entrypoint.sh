@@ -23,42 +23,28 @@ else
   fi
   gcsfuse -o allow_other --file-mode 755 --dir-mode 755 $GCSFUSE_ARGS ${GCSFUSE_BUCKET} ${GCSFUSE_MOUNT}
 
-  JIRA_DATA_PATH=${GCSFUSE_MOUNT}/data
-  if [ -d ${JIRA_DATA_PATH} ]
-  then
-      echo "JIRA Data ${JIRA_DATA_PATH} exists"
-  else
-      echo "Create Directory ${JIRA_DATA_PATH}"
-      mkdir -p ${JIRA_DATA_PATH}
-  fi
+  declare -A JIRA_DATA_LINKS
+  JIRA_DATA_LINKS["${GCSFUSE_MOUNT}/data"]="${JIRA_HOME}/data"
+  JIRA_DATA_LINKS["${GCSFUSE_MOUNT}/plugins"]="${JIRA_HOME}/plugins"
 
-  JIRA_LINK_DATA_PATH=${JIRA_HOME}/data
-  if [ -d ${JIRA_LINK_DATA_PATH} ]
-  then
-      echo "JIRA Source Data ${JIRA_LINK_DATA_PATH} exists need to remove"
-      rm -rf ${JIRA_LINK_DATA_PATH}
-  fi
+  for key in ${!JIRA_DATA_LINKS[@]}
+  do
+    if [ -d ${key} ]
+    then
+        echo "JIRA Data ${key} exists"
+    else
+        echo "Create Directory ${key}"
+        mkdir -p ${key}
+    fi
 
-  ln -s ${JIRA_DATA_PATH} ${JIRA_LINK_DATA_PATH}
+    if [ -d ${JIRA_DATA_LINKS[$key]} ]
+    then
+        echo "JIRA Data Link ${JIRA_DATA_LINKS[$key]} exists need to remove"
+        rm -rf ${JIRA_DATA_LINKS[$key]}
+    fi
 
-  JIRA_PLUGINS_PATH=${GCSFUSE_MOUNT}/plugins
-  if [ -d ${JIRA_PLUGINS_PATH} ]
-  then
-      echo "JIRA Plugins ${JIRA_PLUGINS_PATH} exists"
-  else
-      echo "Create Directory ${JIRA_PLUGINS_PATH}"
-      mkdir -p ${JIRA_PLUGINS_PATH}
-  fi
-
-  JIRA_LINK_PLUGINS_PATH=${JIRA_HOME}/plugins
-  if [ -d ${JIRA_LINK_PLUGINS_PATH} ]
-  then
-      echo "JIRA Source Plugins ${JIRA_LINK_PLUGINS_PATH} exists need to remove"
-      rm -rf ${JIRA_LINK_PLUGINS_PATH}
-  fi
-
-  ln -s ${JIRA_PLUGINS_PATH} ${JIRA_LINK_PLUGINS_PATH} 
-
+    ln -s ${key} ${JIRA_DATA_LINKS[$key]}
+  done
 fi
 
 # Check if the JIRA_HOME and JIRA_INSTALL variable are found in ENV.
