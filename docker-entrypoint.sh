@@ -24,8 +24,8 @@ else
   gcsfuse -o allow_other --file-mode 755 --dir-mode 755 $GCSFUSE_ARGS ${GCSFUSE_BUCKET} ${GCSFUSE_MOUNT}
 
   declare -A JIRA_DATA_LINKS
-  JIRA_DATA_LINKS["${GCSFUSE_MOUNT}/data"]="${JIRA_HOME}/data"
-  JIRA_DATA_LINKS["${GCSFUSE_MOUNT}/plugins"]="${JIRA_HOME}/plugins"
+  JIRA_DATA_LINKS["${GCSFUSE_MOUNT}/data/attachments"]="${JIRA_HOME}/data/attachments"
+  JIRA_DATA_LINKS["${GCSFUSE_MOUNT}/plugins/installed-plugins"]="${JIRA_HOME}/plugins/installed-plugins"
 
   for key in ${!JIRA_DATA_LINKS[@]}
   do
@@ -35,12 +35,20 @@ else
     else
         echo "Create Directory ${key}"
         mkdir -p ${key}
+        echo "Directory ${key} created"
     fi
 
     if [ -d ${JIRA_DATA_LINKS[$key]} ]
     then
         echo "JIRA Data Link ${JIRA_DATA_LINKS[$key]} exists need to remove"
         rm -rf ${JIRA_DATA_LINKS[$key]}
+        echo "JIRA Data Link ${JIRA_DATA_LINKS[$key]} removed"
+    else
+        echo "JIRA Data Link ${JIRA_DATA_LINKS[$key]} not exists."
+        mkdir -p ${JIRA_DATA_LINKS[$key]}
+        echo "JIRA Data Link ${JIRA_DATA_LINKS[$key]} created."
+        rm -rf ${JIRA_DATA_LINKS[$key]}
+        echo "JIRA Data Link ${JIRA_DATA_LINKS[$key]} removed, leave directory."
     fi
 
     ln -s ${key} ${JIRA_DATA_LINKS[$key]}
