@@ -133,11 +133,12 @@ ENV JIRA_DATACENTER_SHARE="/mnt/shared"
 ENV GOOGLE_APPLICATION_CREDENTIALS="/gcscredentials"
 
 # Mount point for the gcs file system
+ENV GCSFUSE_MOUNT_PREFIX="/mnt/jira"
 # Jira application persistent directory for attachments and plugins
-ENV GCSFUSE_MOUNT=/mnt/jira
+ENV GCSFUSE_MOUNT="/data/attachments; plugins/installed-plugins"
 
 # Bucket name to mount
-ENV GCSFUSE_BUCKET=""
+ENV GCSFUSE_BUCKET="bucket1_name; bucket2_name"
 
 # GCSFUSE arguments to use
 # See : https://github.com/GoogleCloudPlatform/gcsfuse
@@ -243,8 +244,10 @@ RUN echo -e "LANG=\"en_US.UTF-8\" \n LC_ALL=\"en_US.UTF-8\"" >/etc/sysconfig/i18
   && sync
 
 # GCSFUSE Install
-RUN mkdir -p ${GCSFUSE_MOUNT} \
-  && chown -R ${OS_USERNAME}:${OS_GROUPNAME} ${GCSFUSE_MOUNT}
+# Create diretory and grant permission
+RUN mkdir -p ${GCSFUSE_MOUNT_PREFIX} \
+  && chown -R ${OS_USERNAME}:${OS_GROUPNAME} ${GCSFUSE_MOUNT_PREFIX}
+# Install gcsfuse
 COPY gcsfuse.repo /etc/yum.repos.d/
 RUN yum -y install gcsfuse
 RUN echo 'user_allow_other' >> /etc/fuse.conf
