@@ -10,8 +10,8 @@ else
   else  
     echo "Info: Mounting GCS Filesystem"
 
-    IFS=', ' read -r -a GCSFUSE_MOUNTS <<< ${GCSFUSE_MOUNT}
-    IFS=', ' read -r -a GCSFUSE_BUCKETS <<< ${GCSFUSE_BUCKET}
+    IFS='; ' read -r -a GCSFUSE_MOUNTS <<< ${GCSFUSE_MOUNT}
+    IFS='; ' read -r -a GCSFUSE_BUCKETS <<< ${GCSFUSE_BUCKET}
 
     for i in "${!GCSFUSE_MOUNTS[@]}";   
     do   
