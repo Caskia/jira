@@ -248,8 +248,11 @@ RUN echo -e "LANG=\"en_US.UTF-8\" \n LC_ALL=\"en_US.UTF-8\"" >/etc/sysconfig/i18
 RUN mkdir -p ${GCSFUSE_MOUNT_PREFIX} \
   && chown -R ${OS_USERNAME}:${OS_GROUPNAME} ${GCSFUSE_MOUNT_PREFIX}
 # Install gcsfuse
-COPY gcsfuse.repo /etc/yum.repos.d/
-RUN yum -y install gcsfuse
+RUN yum -y install fuse
+RUN curl -L -O https://github.com/GoogleCloudPlatform/gcsfuse/releases/download/v0.33.2/gcsfuse-0.33.2-1.x86_64.rpm
+RUN rpm --install -p gcsfuse-0.33.2-1.x86_64.rpm
+# COPY gcsfuse.repo /etc/yum.repos.d/
+# RUN yum -y install gcsfuse
 RUN echo 'user_allow_other' >> /etc/fuse.conf
 
 # Copy DB Connector driver
