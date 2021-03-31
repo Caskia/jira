@@ -129,13 +129,17 @@ ENV DATACENTER_MODE=false
 # ENV JIRA_DATACENTER_SHARE /var/atlassian/jira-datacenter
 ENV JIRA_DATACENTER_SHARE="/mnt/shared"
 
+# DATA_MOUNT_METHOD
+# BUCKET or FILESTORE
+ENV DATA_MOUNT_METHOD = "BUCKET"
+
 # GFUSE
 ENV GOOGLE_APPLICATION_CREDENTIALS="/gcscredentials"
 
 # Mount point for the gcs file system
 ENV GCSFUSE_MOUNT_PREFIX="/mnt/jira"
 # Jira application persistent directory for attachments and plugins
-ENV GCSFUSE_MOUNT="/data/attachments; plugins/installed-plugins"
+ENV GCSFUSE_MOUNT="/data/attachments; /plugins/installed-plugins"
 
 # Bucket name to mount
 ENV GCSFUSE_BUCKET="bucket1_name; bucket2_name"
@@ -144,6 +148,12 @@ ENV GCSFUSE_BUCKET="bucket1_name; bucket2_name"
 # See : https://github.com/GoogleCloudPlatform/gcsfuse
 # ENV GCSFUSE_ARGS="--limit-ops-per-sec 100 --limit-bytes-per-sec 100 --stat-cache-ttl 60s --type-cache-ttl 60s"
 ENV GCSFUSE_ARGS=""
+
+# FILESTORE
+# Mount point for the file store
+ENV FILESTORE_MOUNT_PREFIX="/mnt/jira"
+# Jira application persistent directory for attachments and plugins
+ENV FILESTORE_MOUNT="/data/attachments; /plugins/installed-plugins"
 
 
 # Reverse proxy specific variables:
@@ -255,6 +265,11 @@ RUN rpm --install -p gcsfuse-0.33.2-1.x86_64.rpm
 # RUN yum -y install gcsfuse
 RUN echo 'user_allow_other' >> /etc/fuse.conf
 
+# FILESTORE
+# Create diretory and grant permission
+RUN mkdir -p ${FILESTORE_MOUNT_PREFIX}} \
+  && chown -R ${OS_USERNAME}:${OS_GROUPNAME} ${FILESTORE_MOUNT_PREFIX}
+
 # Copy DB Connector driver
 # Mysql DB Connector driver
 COPY mysql-connector-java-5.1.49.jar "${JIRA_INSTALL}/lib"
@@ -280,6 +295,11 @@ EXPOSE 40011/tcp
 #   - or - whatever value you used above as JIRA_HOME.
 WORKDIR ${JIRA_HOME}
 
+# Set default user as root and remove password
+RUN yum -y install passwd \
+  && sudo usermod -aG wheel ${OS_USERNAME} \
+  && passwd -d ${OS_USERNAME}
+  
 # Set the default user for the image/container to user 'jira'. Jira software will be run as this user & group.
 # USER jira:jira
 USER ${OS_USERNAME}:${OS_GROUPNAME}
