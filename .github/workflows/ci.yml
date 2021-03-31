@@ -14,9 +14,6 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: caskia/jira
-      IMAGE_TAG: 8.13.1
     steps:
       -
         name: Set up QEMU
@@ -36,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ IMAGE_NAME }}:${{ IMAGE_TAG }}
+          tags: caskia/jira:8.13.1
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
