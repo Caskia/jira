@@ -33,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: caskia/jira:7.13.0
+          tags: caskia/jira:8.13.1
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
