@@ -1,80 +1,32 @@
 #!/bin/bash
 
 # Mount GCSFUSE
-if [ "${DATA_MOUNT_METHOD}" == "BUCKET" ];
+if [ -z "${GCSFUSE_BUCKET}" ]; 
 then
-  if [ -z "${GCSFUSE_BUCKET}" ]; 
-  then
-    echo "Error: GCSFUSE_BUCKET is not specified, won't mount GCSFUSE"
-  else
-    if [ -z "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
-      echo "Error: Missing ${GOOGLE_APPLICATION_CREDENTIALS} not provided"
-    else  
-      echo "Info: Mounting GCS Filesystem"
+  echo "Error: GCSFUSE_BUCKET is not specified, won't mount GCSFUSE"
+else
+  if [ -z "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
+    echo "Error: Missing ${GOOGLE_APPLICATION_CREDENTIALS} not provided"
+  else  
+    echo "Info: Mounting GCS Filesystem"
 
-      IFS='; ' read -r -a GCSFUSE_MOUNTS <<< ${GCSFUSE_MOUNT}
-      IFS='; ' read -r -a GCSFUSE_BUCKETS <<< ${GCSFUSE_BUCKET}
+    IFS='; ' read -r -a GCSFUSE_MOUNTS <<< ${GCSFUSE_MOUNT}
+    IFS='; ' read -r -a GCSFUSE_BUCKETS <<< ${GCSFUSE_BUCKET}
 
-      for i in "${!GCSFUSE_MOUNTS[@]}";   
-      do   
-        MOUNT="${GCSFUSE_MOUNT_PREFIX}${GCSFUSE_MOUNTS[$i]}"
-        MOUNT_LINK="${JIRA_HOME}${GCSFUSE_MOUNTS[$i]}"
-        BUCKET=${GCSFUSE_BUCKETS[$i]}
-
-        if [ -d ${MOUNT} ]
-        then
-            echo "GCSFUSE MOUNT ${MOUNT} exists"
-        else
-            echo "CREATE DIRECTORY ${MOUNT}"
-            mkdir -p ${MOUNT}
-        fi
-        gcsfuse -o allow_other --file-mode 755 --dir-mode 755 $GCSFUSE_ARGS ${BUCKET} ${MOUNT}
-
-        if [ -d ${MOUNT_LINK} ]
-          then
-              echo "JIRA Data Link ${MOUNT_LINK} exists need to remove"
-              rm -rf ${MOUNT_LINK}
-              echo "JIRA Data Link ${MOUNT_LINK} removed"
-          else
-              echo "JIRA Data Link ${MOUNT_LINK} not exists."
-              mkdir -p ${MOUNT_LINK}
-              echo "JIRA Data Link ${MOUNT_LINK} created."
-              rm -rf ${MOUNT_LINK}
-              echo "JIRA Data Link ${MOUNT_LINK} removed, leave directory."
-          fi
-
-          ln -s ${MOUNT} ${MOUNT_LINK}
-      done
-    fi
-  fi
-fi
-
-# Link FILESTORE
-if [ "${DATA_MOUNT_METHOD}" == "FILESTORE" ];
-then
-  if [ -z "${FILESTORE_MOUNT}" ]; 
-  then
-    echo "Error: FILESTORE_MOUNT is not specified, won't link FILESTORE"
-  else
-    echo "Assign application user to read/write/execute FILESTORE."
-    sudo chown ${OS_USERNAME}:${OS_GROUPNAME} ${FILESTORE_MOUNT_PREFIX}
-
-    echo "Info: Linking FILESTORE Filesystem"
-
-    IFS='; ' read -r -a FILESTORE_MOUNTS <<< ${FILESTORE_MOUNT}
-
-    for i in "${!FILESTORE_MOUNTS[@]}";   
+    for i in "${!GCSFUSE_MOUNTS[@]}";   
     do   
-      MOUNT="${FILESTORE_MOUNT_PREFIX}${FILESTORE_MOUNTS[$i]}"
-      MOUNT_LINK="${JIRA_HOME}${FILESTORE_MOUNTS[$i]}"
+      MOUNT="${GCSFUSE_MOUNT_PREFIX}${GCSFUSE_MOUNTS[$i]}"
+      MOUNT_LINK="${JIRA_HOME}${GCSFUSE_MOUNTS[$i]}"
+      BUCKET=${GCSFUSE_BUCKETS[$i]}
 
       if [ -d ${MOUNT} ]
       then
-          echo "FILESTORE LINK SOURCE ${MOUNT} exists"
+          echo "GCSFUSE MOUNT ${MOUNT} exists"
       else
           echo "CREATE DIRECTORY ${MOUNT}"
           mkdir -p ${MOUNT}
       fi
+      gcsfuse -o allow_other --file-mode 755 --dir-mode 755 $GCSFUSE_ARGS ${BUCKET} ${MOUNT}
 
       if [ -d ${MOUNT_LINK} ]
         then
