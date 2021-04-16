@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Mount GCSFUSE
-if [ "${DATA_MOUNT_METHOD}" == "BUCKET" ];
+if [ "${DATACENTER_MODE}" == "false" -o -z "${DATACENTER_MODE}" ] && [ "${DATA_MOUNT_METHOD}" == "BUCKET" ];
 then
   if [ -z "${GCSFUSE_BUCKET}" ]; 
   then
@@ -50,7 +50,7 @@ then
 fi
 
 # Link FILESTORE
-if [ "${DATA_MOUNT_METHOD}" == "FILESTORE" ];
+if [ "${DATACENTER_MODE}" == "false" -o -z "${DATACENTER_MODE}" ] && [ "${DATA_MOUNT_METHOD}" == "FILESTORE" ];
 then
   if [ -z "${FILESTORE_MOUNT}" ]; 
   then
@@ -232,6 +232,9 @@ if [ "${DATACENTER_MODE}" == "true" ] && [ -n "${JIRA_DATACENTER_SHARE}" ]; then
   # Note: The DataCenter logic for Jira differs from Confluence.
   if [ -d ${JIRA_DATACENTER_SHARE} ]; then
     echo "DATACENTER_MODE is found to be 'true', and JIRA_DATACENTER_SHARE is found as: ${JIRA_DATACENTER_SHARE}."
+    echo "Assign application user to read/write/execute JIRA_DATACENTER_SHARE."
+    sudo chown ${OS_USERNAME}:${OS_GROUPNAME} ${JIRA_DATACENTER_SHARE}
+
     echo "Proceeding to setup JIRA_HOME/cluster.properties file"
 
     # hostname -f returns the FQDN of the node, which includes its hostname and the k8s NAMESPACE, etc.
